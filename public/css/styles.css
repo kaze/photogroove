@@ -14,6 +14,7 @@ canvas {
 .large {
     width: 500px;
     float: right;
+    margin-top: 1.4em;
 }
 
 .selected {
