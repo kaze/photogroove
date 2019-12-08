@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="vendor/range-slider/range-slider.css">
 
     <script src="vendor/range-slider/range-slider.js"></script>
+    <script src="vendor/pasta/pasta.js"></script>
     <script src="js/slider.js"></script>
 </head>
 
@@ -15,8 +16,14 @@
     <div id="app"></div>
     <script src="js/photogroove.js"></script>
     <script>
-        Elm.PhotoGroove.init({
+        var app = Elm.PhotoGroove.init({
             node: document.getElementById("app")
+        });
+
+        app.ports.setFilters.subscribe(function(options) {
+            requestAnimationFrame(function() {
+                Pasta.apply(document.getElementById("main-canvas"), options);
+            });
         });
     </script>
 </body>
