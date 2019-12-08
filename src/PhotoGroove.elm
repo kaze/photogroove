@@ -2,12 +2,13 @@ module PhotoGroove exposing (main)
 
 import Array exposing (Array)
 import Browser
-import Html exposing (Html, h1, h3, div, img, button, label, text, input)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html exposing (Html, Attribute, node, h1, h3, div, img, button, label, text, input)
+import Html.Attributes as Attr exposing (..)
+import Html.Events exposing (on, onClick)
 import Http
-import Json.Decode
-import Json.Decode.Pipeline
+import Json.Decode as JSON
+import Json.Decode.Pipeline as JSONPP
+import Json.Encode as JSEncode
 import Random
 
 urlPrefix : String
@@ -20,13 +21,16 @@ type Msg
     | ClickedSurpriseMe
     | GotRandomPhoto Photo
     | GotPhotos (Result Http.Error (List Photo))
+    | SlidHue Int
+    | SlidRipple Int
+    | SlidNoise Int
 
 view : Model -> Html Msg
 view model =
   div [ class "content" ] <|
       case model.status of
         Loaded photos selectedUrl ->
-          viewLoaded photos selectedUrl model.chosenSize
+          viewLoaded photos selectedUrl model
 
         Loading ->
           []
@@ -34,16 +38,21 @@ view model =
         Errored errorMessage ->
           [text ("Error: " ++ errorMessage)]
 
-viewLoaded : List Photo -> String -> ThumbnailSize -> List (Html Msg)
-viewLoaded photos selectedUrl chosenSize =
+viewLoaded : List Photo -> String -> Model -> List (Html Msg)
+viewLoaded photos selectedUrl model =
   [ h1 [] [ text "Photo Groove" ]
   , button
     [ onClick ClickedSurpriseMe ]
     [ text "Surprise Me!" ]
+  , div [ class "filters" ]
+      [ viewFilter SlidHue "Hue" model.hue
+      , viewFilter SlidRipple "Ripple" model.ripple
+      , viewFilter SlidNoise "Noise" model.noise
+      ]
   , h3 [] [ text "Thumbnail Size:" ]
   , div [ id "choose-size" ]
     (List.map viewSizeChooser [ Small, Medium, Large ])
-  , div [ id "thumbnails", class (sizeToString chosenSize) ]
+  , div [ id "thumbnails", class (sizeToString model.chosenSize) ]
     (List.map (viewThumbnail selectedUrl) photos)
   , img
     [ class "large"
@@ -69,6 +78,19 @@ viewSizeChooser size =
     , text  (sizeToString size)
     ]
 
+viewFilter : (Int -> Msg) -> String -> Int -> Html Msg
+viewFilter toMsg name magnitude =
+  div [ class "filter-slider" ]
+      [ label [] [ text name ]
+      , rangeSlider
+        [ Attr.max "11"
+        , Attr.property "val" (JSEncode.int magnitude)
+        , onSlide toMsg
+        ]
+        []
+      , label [] [ text (String.fromInt magnitude ) ]
+      ]
+
 sizeToString : ThumbnailSize -> String
 sizeToString size =
   case size of
@@ -92,12 +114,12 @@ type alias Photo =
   , title : String
   }
 
-photoDecoder : Json.Decode.Decoder Photo
+photoDecoder : JSON.Decoder Photo
 photoDecoder =
-  Json.Decode.succeed Photo
-    |> Json.Decode.Pipeline.required "url" Json.Decode.string
-    |> Json.Decode.Pipeline.required "size" Json.Decode.int
-    |> Json.Decode.Pipeline.optional "title" Json.Decode.string "(untitled)"
+  JSON.succeed Photo
+    |> JSONPP.required "url" JSON.string
+    |> JSONPP.required "size" JSON.int
+    |> JSONPP.optional "title" JSON.string "(untitled)"
 
 type Status
   = Loading
@@ -107,12 +129,18 @@ type Status
 type alias Model =
   { status : Status
   , chosenSize : ThumbnailSize
+  , hue : Int
+  , ripple : Int
+  , noise : Int
   }
 
 initialModel : Model
 initialModel =
   { status = Loading
   , chosenSize = Medium
+  , hue = 5
+  , ripple = 5
+  , noise = 5
   }
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -154,6 +182,15 @@ update msg model =
     GotPhotos (Err httpError) ->
       ( { model | status = Errored "Server error" }, Cmd.none )
 
+    SlidHue hue ->
+      ( { model | hue = hue }, Cmd.none )
+
+    SlidRipple ripple ->
+      ( { model | ripple = ripple }, Cmd.none )
+
+    SlidNoise noise ->
+      ( { model | noise = noise }, Cmd.none )
+
 selectUrl : String -> Status -> Status
 selectUrl url status =
   case status of
@@ -170,7 +207,7 @@ initialCmd : Cmd Msg
 initialCmd =
   Http.get
     { url = urlPrefix ++ "photos/list.json"
-    , expect = Http.expectJson GotPhotos (Json.Decode.list photoDecoder)
+    , expect = Http.expectJson GotPhotos (JSON.list photoDecoder)
     }
 
 main : Program () Model Msg
@@ -181,3 +218,13 @@ main =
     , update = update
     , subscriptions = \_ -> Sub.none
   }
+
+rangeSlider : List (Attribute msg) -> List (Html msg) -> Html msg
+rangeSlider attributes children =
+  node "range-slider" attributes children
+
+onSlide : (Int -> msg) -> Attribute msg
+onSlide toMsg =
+  JSON.at [ "detail", "userSlidTo" ] JSON.int
+    |> JSON.map toMsg
+    |> on "slide"
