@@ -2,20 +2,21 @@
 <html>
 
 <head>
-    <title>PhotoGroove</title>
+    <!-- <title>PhotoGroove</title> -->
+    <title>PhotoFolders</title>
 
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="vendor/range-slider/range-slider.css">
+    <!-- <link rel="stylesheet" href="vendor/range-slider/range-slider.css"> -->
 
-    <script src="vendor/range-slider/range-slider.js"></script>
-    <script src="vendor/pasta/pasta.js"></script>
-    <script src="js/slider.js"></script>
+    <!-- <script src="vendor/range-slider/range-slider.js"></script> -->
+    <!-- <script src="vendor/pasta/pasta.js"></script> -->
+    <!-- <script src="js/slider.js"></script> -->
 </head>
 
 <body>
     <div id="app"></div>
-    <script src="js/photogroove.js"></script>
-    <script>
+    <script src="js/photofolders.js"></script>
+    <!-- <script>
         var app = Elm.PhotoGroove.init({
             node: document.getElementById("app"),
             flags: Pasta.version
@@ -29,6 +30,11 @@
 
         Pasta.addActivityListener(function(activity) {
             app.ports.activityChanges.send(activity);
+        });
+    </script> -->
+    <script>
+        var app = Elm.PhotoFolders.init({
+            node: document.getElementById("app")
         });
     </script>
 </body>

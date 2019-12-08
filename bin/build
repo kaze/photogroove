@@ -1,3 +1,4 @@
 #!/bin/bash
 
 elm make src/PhotoGroove.elm --output public/js/photogroove.js
+elm make src/PhotoFolders.elm --output public/js/photofolders.js
