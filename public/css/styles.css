@@ -1,5 +1,5 @@
 body {
-    font-family: Verdana;
+    font-family: "Helvetica Neue", Verdana, sans-serif;
     background-color: rgb(44, 44, 44);
     color: rgb(250, 250, 250);
 }
@@ -161,12 +161,12 @@ range-slider .jsr_slider:focus::before {
 }
 
 .folder.expanded label::before {
-    content: "▸";
+    content: "-";
     margin-right: 12px;
 }
 
 .folder.collapsed label::before {
-    content: "▾";
+    content: "+";
     margin-right: 12px;
 }
 
