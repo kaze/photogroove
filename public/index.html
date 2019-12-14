@@ -1,41 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
     <!-- <title>PhotoGroove</title> -->
     <title>PhotoFolders</title>
 
-    <link rel="stylesheet" href="css/styles.css">
-    <!-- <link rel="stylesheet" href="vendor/range-slider/range-slider.css"> -->
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/vendor/range-slider/range-slider.css">
 
-    <!-- <script src="vendor/range-slider/range-slider.js"></script> -->
-    <!-- <script src="vendor/pasta/pasta.js"></script> -->
-    <!-- <script src="js/slider.js"></script> -->
+    <script src="/vendor/range-slider/range-slider.js"></script>
+    <script src="/vendor/pasta/pasta.js"></script>
+    <script src="/js/slider.js"></script>
 </head>
 
 <body>
     <div id="app"></div>
-    <script src="js/photofolders.js"></script>
-    <!-- <script>
-        var app = Elm.PhotoGroove.init({
-            node: document.getElementById("app"),
+    <script src="/js/main.js"></script>
+    <script>
+        var app = Elm.Main.init({
+            node: document.getElementById('app'),
             flags: Pasta.version
         });
 
-        app.ports.setFilters.subscribe(function(options) {
-            requestAnimationFrame(function() {
-                Pasta.apply(document.getElementById("main-canvas"), options);
-            });
-        });
+        // app.ports.setFilters.subscribe(function(options) {
+        //     requestAnimationFrame(function() {
+        //         Pasta.apply(document.getElementById("main-canvas"), options);
+        //      });
+        // });
 
-        Pasta.addActivityListener(function(activity) {
-            app.ports.activityChanges.send(activity);
-        });
-    </script> -->
-    <script>
-        var app = Elm.PhotoFolders.init({
-            node: document.getElementById("app")
-        });
+        // Pasta.addActivityListener(function(activity) {
+        //     app.ports.activityChanges.send(activity);
+        // });
     </script>
 </body>
 
